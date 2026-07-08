@@ -1,4 +1,3 @@
-import os
 import time
 from uuid import uuid4
 
@@ -12,22 +11,12 @@ LOGGED_IN_EMAIL = "25f1001126@ds.study.iitm.ac.in"
 
 ASSIGNED_ORIGIN = "https://app-wg66hi.example.com"
 EXAM_ORIGIN = "https://exam.sanand.workers.dev"
-
 ALLOWED_ORIGINS = [ASSIGNED_ORIGIN, EXAM_ORIGIN]
 
 RATE_LIMIT_B = 12
 RATE_LIMIT_WINDOW = 10
 
 client_buckets = {}
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["X-Request-ID", "Retry-After"],
-)
 
 
 @app.middleware("http")
@@ -62,6 +51,16 @@ async def rate_limit_middleware(request: Request, call_next):
     timestamps.append(now)
     client_buckets[client_id] = timestamps
     return await call_next(request)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["X-Request-ID", "Retry-After"],
+)
 
 
 @app.get("/ping")
